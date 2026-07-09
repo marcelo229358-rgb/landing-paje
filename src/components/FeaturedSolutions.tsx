@@ -45,7 +45,7 @@ export default async function FeaturedSolutions() {
                   <h3 className="text-base font-semibold text-white sm:text-lg">{s.nome}</h3>
                   <p className="mt-0.5 line-clamp-2 text-xs text-zinc-400 sm:text-sm">{s.subtitulo}</p>
                   <p className="mt-3 text-sm font-semibold text-accent sm:mt-4">
-                    {s.link_compra
+                    {s.link_compra || s.slug === 'syscontabel'
                       ? 'Adquira agora →'
                       : s.preco_mensal != null
                         ? `R$ ${formatPrecoBr(s.preco_mensal)}/mês →`

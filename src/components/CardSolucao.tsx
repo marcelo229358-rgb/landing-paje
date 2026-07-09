@@ -44,7 +44,7 @@ export default function CardSolucao({ solucao }: CardSolucaoProps) {
         </div>
 
         <p className="mt-auto pt-3 text-sm font-semibold text-accent">
-          {solucao.link_compra
+          {solucao.link_compra || solucao.slug === 'syscontabel'
             ? 'Adquira agora →'
             : solucao.preco_mensal != null
               ? `R$ ${formatPrecoBr(solucao.preco_mensal)}/mês →`

@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { mockSiteConfig } from '@/lib/mock-data';
 
 interface IntencaoCompraFormProps {
   solucaoNome: string;
-  linkCompra: string;
 }
 
-export default function IntencaoCompraForm({ solucaoNome, linkCompra }: IntencaoCompraFormProps) {
+const WHATSAPP_NUMERO = '5581991821954';
+
+export default function IntencaoCompraForm({ solucaoNome }: IntencaoCompraFormProps) {
   const [aberto, setAberto] = useState(false);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -32,9 +32,8 @@ export default function IntencaoCompraForm({ solucaoNome, linkCompra }: Intencao
       `Telefone: ${telefone}`,
     ].join('\n');
 
-    const zapUrl = `https://wa.me/${mockSiteConfig.whatsapp}?text=${encodeURIComponent(mensagem)}`;
-    window.open(zapUrl, '_blank');
-    window.location.href = linkCompra;
+    const zapUrl = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensagem)}`;
+    window.location.href = zapUrl;
   }
 
   return (
@@ -58,7 +57,7 @@ export default function IntencaoCompraForm({ solucaoNome, linkCompra }: Intencao
             <div>
               <h3 className="text-base font-semibold text-foreground">Dados para compra</h3>
               <p className="mt-1 text-xs text-muted-foreground">
-                Preencha e envie pelo WhatsApp para ir ao pagamento.
+                Preencha e envie pelo WhatsApp.
               </p>
             </div>
             <button

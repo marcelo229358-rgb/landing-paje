@@ -37,7 +37,7 @@ export default async function SolucaoDetalhePage({ params }: PageProps) {
   }
 
   const isSaasAssinatura = solucao.categoria === 'saas' && solucao.saas_product && solucao.preco_mensal != null;
-  const hasLinkCompra = Boolean(solucao.link_compra);
+  const capturaWhatsapp = solucao.slug === 'syscontabel';
   const fotos = solucao.fotos.sort((a, b) => a.ordem - b.ordem);
 
   return (
@@ -99,11 +99,11 @@ export default async function SolucaoDetalhePage({ params }: PageProps) {
             </div>
 
             <div className="mt-6 rounded-lg border border-accent/30 bg-accent/5 p-4 text-center">
-              {hasLinkCompra ? (
+              {capturaWhatsapp ? (
                 <>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider">Disponível agora</p>
                   <p className="mt-1 text-3xl font-bold text-accent">Adquira agora</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Pagamento seguro via Kiwify</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Fale conosco pelo WhatsApp</p>
                 </>
               ) : solucao.preco_mensal != null ? (
                 <>
@@ -123,12 +123,9 @@ export default async function SolucaoDetalhePage({ params }: PageProps) {
             </div>
 
             <div className="mt-6 space-y-3">
-              {hasLinkCompra ? (
+              {capturaWhatsapp ? (
                 <>
-                  <IntencaoCompraForm
-                    solucaoNome={solucao.nome}
-                    linkCompra={solucao.link_compra!}
-                  />
+                  <IntencaoCompraForm solucaoNome={solucao.nome} />
                   <Link
                     href="/contato"
                     className="flex h-12 w-full items-center justify-center rounded border border-primary text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
