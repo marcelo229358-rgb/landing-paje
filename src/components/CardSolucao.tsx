@@ -10,12 +10,14 @@ interface CardSolucaoProps {
 
 export default function CardSolucao({ solucao }: CardSolucaoProps) {
   const fotoPrincipal = solucao.fotos.find((f) => f.principal) ?? solucao.fotos[0];
+  const href = solucao.link_compra ?? `/solucao/${solucao.id}`;
+  const isExternal = Boolean(solucao.link_compra);
 
-  return (
-    <Link
-      href={`/solucao/${solucao.id}`}
-      className="group flex flex-col overflow-hidden rounded-lg border bg-white transition-shadow hover:shadow-lg"
-    >
+  const className =
+    'group flex flex-col overflow-hidden rounded-lg border bg-white transition-shadow hover:shadow-lg';
+
+  const content = (
+    <>
       <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100">
         {fotoPrincipal && (
           <Image
@@ -44,11 +46,32 @@ export default function CardSolucao({ solucao }: CardSolucaoProps) {
         </div>
 
         <p className="mt-auto pt-3 text-sm font-semibold text-accent">
-          {solucao.preco_mensal != null
-            ? `R$ ${formatPrecoBr(solucao.preco_mensal)}/mês →`
-            : 'Solicitar orçamento →'}
+          {solucao.link_compra
+            ? 'Adquira agora →'
+            : solucao.preco_mensal != null
+              ? `R$ ${formatPrecoBr(solucao.preco_mensal)}/mês →`
+              : 'Solicitar orçamento →'}
         </p>
       </div>
+    </>
+  );
+
+  if (isExternal) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className={className}>
+      {content}
     </Link>
   );
 }

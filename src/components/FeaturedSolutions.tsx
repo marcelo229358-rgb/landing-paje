@@ -21,12 +21,13 @@ export default async function FeaturedSolutions() {
         <div className="-mx-4 mt-8 flex gap-4 overflow-x-auto scroll-smooth px-4 pb-2 scrollbar-hide snap-x snap-mandatory sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-8 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
           {solucoes.map((s) => {
             const foto = s.fotos.find((f) => f.principal) ?? s.fotos[0];
-            return (
-              <Link
-                key={s.id}
-                href={`/solucao/${s.id}`}
-                className="group w-[82vw] shrink-0 snap-center overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-shadow hover:shadow-xl hover:shadow-accent/10 sm:w-auto sm:shrink sm:snap-align-none sm:rounded-lg"
-              >
+            const href = s.link_compra ?? `/solucao/${s.id}`;
+            const isExternal = Boolean(s.link_compra);
+            const cardClassName =
+              'group w-[82vw] shrink-0 snap-center overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-shadow hover:shadow-xl hover:shadow-accent/10 sm:w-auto sm:shrink sm:snap-align-none sm:rounded-lg';
+
+            const cardContent = (
+              <>
                 <div className="relative aspect-[16/10] overflow-hidden">
                   {foto && (
                     <Image
@@ -45,11 +46,29 @@ export default async function FeaturedSolutions() {
                   <h3 className="text-base font-semibold text-white sm:text-lg">{s.nome}</h3>
                   <p className="mt-0.5 line-clamp-2 text-xs text-zinc-400 sm:text-sm">{s.subtitulo}</p>
                   <p className="mt-3 text-sm font-semibold text-accent sm:mt-4">
-                    {s.preco_mensal != null
-                      ? `R$ ${formatPrecoBr(s.preco_mensal)}/mês →`
-                      : 'Solicitar orçamento →'}
+                    {s.link_compra
+                      ? 'Adquira agora →'
+                      : s.preco_mensal != null
+                        ? `R$ ${formatPrecoBr(s.preco_mensal)}/mês →`
+                        : 'Solicitar orçamento →'}
                   </p>
                 </div>
+              </>
+            );
+
+            return isExternal ? (
+              <a
+                key={s.id}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cardClassName}
+              >
+                {cardContent}
+              </a>
+            ) : (
+              <Link key={s.id} href={href} className={cardClassName}>
+                {cardContent}
               </Link>
             );
           })}

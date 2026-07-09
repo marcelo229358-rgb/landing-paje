@@ -36,6 +36,7 @@ export default async function SolucaoDetalhePage({ params }: PageProps) {
   }
 
   const isSaasAssinatura = solucao.categoria === 'saas' && solucao.saas_product && solucao.preco_mensal != null;
+  const hasLinkCompra = Boolean(solucao.link_compra);
   const fotos = solucao.fotos.sort((a, b) => a.ordem - b.ordem);
 
   return (
@@ -97,14 +98,23 @@ export default async function SolucaoDetalhePage({ params }: PageProps) {
             </div>
 
             <div className="mt-6 rounded-lg border border-accent/30 bg-accent/5 p-4 text-center">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">A partir de</p>
-              {solucao.preco_mensal != null ? (
-                <p className="mt-1 text-3xl font-bold text-accent">
-                  R$ {formatPrecoBr(solucao.preco_mensal)}
-                  <span className="text-base font-normal text-muted-foreground">/mês</span>
-                </p>
+              {hasLinkCompra ? (
+                <>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Disponível agora</p>
+                  <p className="mt-1 text-3xl font-bold text-accent">Adquira agora</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Pagamento seguro via Kiwify</p>
+                </>
+              ) : solucao.preco_mensal != null ? (
+                <>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">A partir de</p>
+                  <p className="mt-1 text-3xl font-bold text-accent">
+                    R$ {formatPrecoBr(solucao.preco_mensal)}
+                    <span className="text-base font-normal text-muted-foreground">/mês</span>
+                  </p>
+                </>
               ) : (
                 <>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">A partir de</p>
                   <p className="mt-1 text-3xl font-bold text-accent">Sob consulta</p>
                   <p className="mt-1 text-xs text-muted-foreground">Valores personalizados para o seu projeto</p>
                 </>
@@ -112,7 +122,24 @@ export default async function SolucaoDetalhePage({ params }: PageProps) {
             </div>
 
             <div className="mt-6 space-y-3">
-              {isSaasAssinatura ? (
+              {hasLinkCompra ? (
+                <>
+                  <a
+                    href={solucao.link_compra}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-12 w-full items-center justify-center rounded-lg bg-accent text-sm font-semibold text-white transition-colors hover:bg-accent/90"
+                  >
+                    Adquira agora
+                  </a>
+                  <Link
+                    href="/contato"
+                    className="flex h-12 w-full items-center justify-center rounded border border-primary text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
+                  >
+                    Falar com Especialista
+                  </Link>
+                </>
+              ) : isSaasAssinatura ? (
                 <AssinarSaaS
                   nome={solucao.nome}
                   saasProduct={solucao.saas_product!}

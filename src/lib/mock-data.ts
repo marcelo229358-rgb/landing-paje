@@ -22,6 +22,31 @@ export const mockSiteConfig: SiteConfig = {
 
 export const mockSolucoes: Solucao[] = [
   {
+    id: 7,
+    nome: 'SysContabel',
+    slug: 'syscontabel',
+    categoria: 'saas',
+    subtitulo: 'Gestão de empréstimos, parcelas e juros para empresas',
+    status: 'disponivel',
+    destaque: true,
+    saas_product: 'syscontabel',
+    link_compra: 'https://pay.kiwify.com.br/XzYBNtU',
+    descricao:
+      'Plataforma multi-tenant para gestão de empréstimos e parcelamentos. Cálculo automático de juros e multas, geração de boletos e contratos em PDF, notificações por WhatsApp e dashboard financeiro completo.',
+    funcionalidades: [
+      'Gestão de contratos e parcelas',
+      'Cálculo automático de juros e multa',
+      'Geração de contratos e recibos em PDF',
+      'Notificações automáticas por WhatsApp',
+      'Dashboard financeiro com indicadores',
+      'Multi-empresa (multi-tenant)',
+    ],
+    fotos: [
+      { id: 10, solucao_id: 7, url: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=900&q=80', ordem: 1, principal: true },
+      { id: 11, solucao_id: 7, url: '/upgrade/contabel.webp', ordem: 2, principal: false },
+    ],
+  },
+  {
     id: 1,
     nome: 'SaaS Barbearia',
     slug: 'saas-barbearia',
@@ -94,30 +119,6 @@ export const mockSolucoes: Solucao[] = [
     fotos: [
       { id: 5, solucao_id: 3, url: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=900&q=80', ordem: 1, principal: true },
       { id: 6, solucao_id: 3, url: 'https://images.unsplash.com/photo-1521737711864-e3b97375f902?w=900&q=80', ordem: 2, principal: false },
-    ],
-  },
-  {
-    id: 7,
-    nome: 'SysContabel',
-    slug: 'syscontabel',
-    categoria: 'saas',
-    subtitulo: 'Gestão de empréstimos, parcelas e juros para empresas',
-    status: 'disponivel',
-    destaque: true,
-    saas_product: 'syscontabel',
-    descricao:
-      'Plataforma multi-tenant para gestão de empréstimos e parcelamentos. Cálculo automático de juros e multas, geração de boletos e contratos em PDF, notificações por WhatsApp e dashboard financeiro completo.',
-    funcionalidades: [
-      'Gestão de contratos e parcelas',
-      'Cálculo automático de juros e multa',
-      'Geração de contratos e recibos em PDF',
-      'Notificações automáticas por WhatsApp',
-      'Dashboard financeiro com indicadores',
-      'Multi-empresa (multi-tenant)',
-    ],
-    fotos: [
-      { id: 10, solucao_id: 7, url: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=900&q=80', ordem: 1, principal: true },
-      { id: 11, solucao_id: 7, url: 'url: '/upgrade/deploy.png'', ordem: 2, principal: false },
     ],
   },
   {

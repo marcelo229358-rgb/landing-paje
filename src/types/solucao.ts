@@ -23,6 +23,7 @@ export interface Solucao {
   fotos: FotoSolucao[];
   preco_mensal?: number;
   saas_product?: string;
+  link_compra?: string;
   created_at?: string;
   updated_at?: string;
 }
