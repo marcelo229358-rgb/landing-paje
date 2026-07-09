@@ -125,10 +125,7 @@ export default async function SolucaoDetalhePage({ params }: PageProps) {
             <div className="mt-6 space-y-3">
               {hasLinkCompra ? (
                 <>
-                  <IntencaoCompraForm
-                    solucaoNome={solucao.nome}
-                    linkCompra={solucao.link_compra!}
-                  />
+                  <IntencaoCompraForm linkCompra={solucao.link_compra!} />
                   <Link
                     href="/contato"
                     className="flex h-12 w-full items-center justify-center rounded border border-primary text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
