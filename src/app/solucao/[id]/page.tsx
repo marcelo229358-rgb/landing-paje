@@ -5,6 +5,7 @@ import { getSolucaoById } from '@/lib/solucao';
 import { categoriaLabels } from '@/lib/solucao';
 import AssinarPorEmail from '@/components/AssinarPorEmail';
 import AssinarSaaS from '@/components/AssinarSaaS';
+import IntencaoCompraForm from '@/components/IntencaoCompraForm';
 import { formatPrecoBr } from '@/lib/format';
 import type { Metadata } from 'next';
 
@@ -124,14 +125,10 @@ export default async function SolucaoDetalhePage({ params }: PageProps) {
             <div className="mt-6 space-y-3">
               {hasLinkCompra ? (
                 <>
-                  <a
-                    href={solucao.link_compra}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-12 w-full items-center justify-center rounded-lg bg-accent text-sm font-semibold text-white transition-colors hover:bg-accent/90"
-                  >
-                    Adquira agora
-                  </a>
+                  <IntencaoCompraForm
+                    solucaoNome={solucao.nome}
+                    linkCompra={solucao.link_compra!}
+                  />
                   <Link
                     href="/contato"
                     className="flex h-12 w-full items-center justify-center rounded border border-primary text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
