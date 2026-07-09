@@ -2,6 +2,10 @@
 
 import { useState } from 'react';
 
+const MAKE_WEBHOOK_URL =
+  process.env.NEXT_PUBLIC_MAKE_WEBHOOK_URL ??
+  'https://hook.us2.make.com/v7gcg31ztytov13mcqu4thd5k8nwcndb';
+
 interface IntencaoCompraFormProps {
   solucaoNome: string;
   linkCompra: string;
@@ -10,34 +14,40 @@ interface IntencaoCompraFormProps {
 export default function IntencaoCompraForm({ solucaoNome, linkCompra }: IntencaoCompraFormProps) {
   const [aberto, setAberto] = useState(false);
   const [enviando, setEnviando] = useState(false);
-  const [erro, setErro] = useState('');
   const [nome, setNome] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setEnviando(true);
-    setErro('');
 
-    try {
-      const body = new URLSearchParams({
-        'form-name': 'captura-leads',
-        nome: nome.trim(),
-        whatsapp: whatsapp.trim(),
-        solucao: solucaoNome,
+    const payload = {
+      nome: nome.trim(),
+      whatsapp: whatsapp.trim(),
+      telefone: whatsapp.trim(),
+      solucao: solucaoNome,
+      produto: solucaoNome,
+      origem: 'landing-page',
+      checkout_url: linkCompra,
+    };
+
+    fetch(MAKE_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Erro HTTP ${response.status}`);
+        }
+        window.location.href = linkCompra;
+      })
+      .catch(() => {
+        alert('Não foi possível enviar seus dados. Tente novamente.');
+        setEnviando(false);
       });
-
-      await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: body.toString(),
-      });
-
-      window.location.href = linkCompra;
-    } catch {
-      setErro('Erro ao enviar dados. Tente novamente.');
-      setEnviando(false);
-    }
   };
 
   return (
@@ -74,16 +84,7 @@ export default function IntencaoCompraForm({ solucaoNome, linkCompra }: Intencao
             </button>
           </div>
 
-          <form
-            name="captura-leads"
-            method="POST"
-            data-netlify="true"
-            onSubmit={handleSubmit}
-            className="space-y-3"
-          >
-            <input type="hidden" name="form-name" value="captura-leads" />
-            <input type="hidden" name="solucao" value={solucaoNome} />
-
+          <form name="captura-leads" onSubmit={handleSubmit} className="space-y-3">
             <div>
               <input
                 type="text"
@@ -108,12 +109,6 @@ export default function IntencaoCompraForm({ solucaoNome, linkCompra }: Intencao
                 className="block w-full rounded-lg border px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
-
-            {erro && (
-              <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
-                {erro}
-              </p>
-            )}
 
             <button
               type="submit"
