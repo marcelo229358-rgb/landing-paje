@@ -117,7 +117,7 @@ export const mockSolucoes: Solucao[] = [
     ],
     fotos: [
       { id: 10, solucao_id: 7, url: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=900&q=80', ordem: 1, principal: true },
-      { id: 11, solucao_id: 7, url: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=900&q=80', ordem: 2, principal: false },
+      { id: 11, solucao_id: 7, url: 'url: '/upgrade/deploy.png'', ordem: 2, principal: false },
     ],
   },
   {
