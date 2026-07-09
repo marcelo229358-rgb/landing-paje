@@ -102,8 +102,8 @@ export default async function SolucaoDetalhePage({ params }: PageProps) {
               {capturaWhatsapp ? (
                 <>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider">Disponível agora</p>
-                  <p className="mt-1 text-3xl font-bold text-accent">Adquira agora</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Fale conosco pelo WhatsApp</p>
+                  <p className="mt-1 text-3xl font-bold text-accent">Fale conosco</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Envie seus dados pelo WhatsApp</p>
                 </>
               ) : solucao.preco_mensal != null ? (
                 <>
