@@ -1,51 +1,80 @@
-interface KiwifyWebhookPayload {
+interface KiwifyProduct {
+  product_name?: string;
+  name?: string;
+}
+
+interface KiwifyCustomer {
+  full_name?: string;
+  name?: string;
+  first_name?: string;
+  email?: string;
+  mobile?: string;
+  phone?: string;
+}
+
+interface KiwifyPurchase {
+  original_offer_price?: number;
+  charge_amount?: number;
+  payment_method?: string;
+}
+
+export interface KiwifyWebhookPayload {
   webhook_event_type?: string;
   order_id?: string;
+  order_ref?: string;
   order_status?: string;
-  product?: {
-    product_name?: string;
-    name?: string;
-  };
-  Product?: {
-    product_name?: string;
-    name?: string;
-  };
-  customer?: {
-    full_name?: string;
-    name?: string;
-    email?: string;
-    mobile?: string;
-    phone?: string;
-  };
-  Customer?: {
-    full_name?: string;
-    name?: string;
-    email?: string;
-    mobile?: string;
-    phone?: string;
-  };
-  purchase?: {
-    original_offer_price?: number;
-    charge_amount?: number;
-    payment_method?: string;
-  };
+  status?: string;
+  token?: string;
+  product?: KiwifyProduct;
+  Product?: KiwifyProduct;
+  customer?: KiwifyCustomer;
+  Customer?: KiwifyCustomer;
+  purchase?: KiwifyPurchase;
   Commissions?: {
     charge_amount?: number;
+  };
+  data?: Record<string, unknown>;
+}
+
+export function normalizeKiwifyPayload(payload: KiwifyWebhookPayload): KiwifyWebhookPayload {
+  if (!payload.data || typeof payload.data !== 'object') {
+    return payload;
+  }
+
+  const data = payload.data as KiwifyWebhookPayload;
+  return {
+    ...payload,
+    ...data,
+    webhook_event_type: payload.webhook_event_type ?? data.webhook_event_type ?? payload.status,
+    order_id: payload.order_id ?? data.order_id ?? data.order_ref,
+    order_status: payload.order_status ?? data.order_status ?? data.status,
+    product: payload.product ?? payload.Product ?? data.product ?? data.Product,
+    customer: payload.customer ?? payload.Customer ?? data.customer ?? data.Customer,
+    purchase: payload.purchase ?? data.purchase,
+    Commissions: payload.Commissions ?? data.Commissions,
   };
 }
 
 export function formatKiwifyPurchaseMessage(payload: KiwifyWebhookPayload): string {
-  const customer = payload.customer ?? payload.Customer;
-  const product = payload.product ?? payload.Product;
+  const normalized = normalizeKiwifyPayload(payload);
+  const customer = normalized.customer ?? normalized.Customer;
+  const product = normalized.product ?? normalized.Product;
   const productName = product?.product_name ?? product?.name ?? 'Produto';
-  const customerName = customer?.full_name ?? customer?.name ?? 'Cliente';
+  const customerName =
+    (customer?.full_name ??
+      customer?.name ??
+      [customer?.first_name].filter(Boolean).join(' ')) || 'Cliente';
   const customerEmail = customer?.email ?? '—';
   const customerPhone = customer?.mobile ?? customer?.phone ?? '—';
-  const orderId = payload.order_id ?? '—';
+  const orderId = normalized.order_id ?? normalized.order_ref ?? '—';
   const price =
-    payload.purchase?.original_offer_price ??
-    (payload.purchase?.charge_amount != null ? payload.purchase.charge_amount / 100 : undefined) ??
-    (payload.Commissions?.charge_amount != null ? payload.Commissions.charge_amount / 100 : undefined);
+    normalized.purchase?.original_offer_price ??
+    (normalized.purchase?.charge_amount != null
+      ? normalized.purchase.charge_amount / 100
+      : undefined) ??
+    (normalized.Commissions?.charge_amount != null
+      ? normalized.Commissions.charge_amount / 100
+      : undefined);
 
   const priceText = price != null ? `R$ ${price.toFixed(2).replace('.', ',')}` : '—';
 
@@ -62,17 +91,34 @@ export function formatKiwifyPurchaseMessage(payload: KiwifyWebhookPayload): stri
 }
 
 export function isKiwifyApprovedPurchase(payload: KiwifyWebhookPayload): boolean {
-  const eventType = payload.webhook_event_type?.toLowerCase();
-  const status = payload.order_status?.toLowerCase();
+  const normalized = normalizeKiwifyPayload(payload);
+  const eventType = normalized.webhook_event_type?.toLowerCase();
+  const status = (normalized.order_status ?? normalized.status)?.toLowerCase();
 
-  if (eventType === 'compra_aprovada' || eventType === 'order_approved') {
+  if (
+    eventType === 'compra_aprovada' ||
+    eventType === 'order_approved' ||
+    eventType === 'paid' ||
+    eventType === 'approved'
+  ) {
     return true;
   }
 
   return status === 'paid' || status === 'approved';
 }
 
-export async function sendWhatsAppNotification(message: string): Promise<boolean> {
+export function isWhatsAppConfigured(): boolean {
+  return Boolean(
+    process.env.CALLMEBOT_API_KEY ||
+      (process.env.ZAPI_INSTANCE_ID && process.env.ZAPI_TOKEN)
+  );
+}
+
+export async function sendWhatsAppNotification(message: string): Promise<{
+  sent: boolean;
+  provider?: string;
+  error?: string;
+}> {
   const phone = process.env.WHATSAPP_NOTIFY_PHONE ?? '5581991821954';
   const callMeBotKey = process.env.CALLMEBOT_API_KEY;
 
@@ -83,7 +129,12 @@ export async function sendWhatsAppNotification(message: string): Promise<boolean
     url.searchParams.set('apikey', callMeBotKey);
 
     const res = await fetch(url.toString());
-    return res.ok;
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      return { sent: false, provider: 'callmebot', error: body || `HTTP ${res.status}` };
+    }
+
+    return { sent: true, provider: 'callmebot' };
   }
 
   const zApiInstance = process.env.ZAPI_INSTANCE_ID;
@@ -102,9 +153,17 @@ export async function sendWhatsAppNotification(message: string): Promise<boolean
         body: JSON.stringify({ phone, message }),
       }
     );
-    return res.ok;
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      return { sent: false, provider: 'z-api', error: body || `HTTP ${res.status}` };
+    }
+
+    return { sent: true, provider: 'z-api' };
   }
 
-  console.warn('[whatsapp] Nenhuma integração configurada (CALLMEBOT_API_KEY ou Z-API)');
-  return false;
+  return {
+    sent: false,
+    error: 'Configure CALLMEBOT_API_KEY ou Z-API no Netlify',
+  };
 }
