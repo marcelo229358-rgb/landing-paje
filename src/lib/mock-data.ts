@@ -30,7 +30,7 @@ export const mockSolucoes: Solucao[] = [
     status: 'disponivel',
     destaque: true,
     saas_product: 'syscontabel',
-    link_compra: 'https://kiwify.app/zzKL1E1',
+    link_compra: 'https://pay.kiwify.com.br/UoFUCCi',
     descricao:
       'Plataforma multi-tenant para gestão de empréstimos e parcelamentos. Cálculo automático de juros e multas, geração de boletos e contratos em PDF, notificações por WhatsApp e dashboard financeiro completo.',
     funcionalidades: [
