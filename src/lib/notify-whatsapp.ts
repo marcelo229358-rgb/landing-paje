@@ -114,12 +114,28 @@ export function isWhatsAppConfigured(): boolean {
   );
 }
 
+function formatNotifyPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.startsWith('55')) return `+${digits}`;
+  return `+55${digits}`;
+}
+
+function isCallMeBotSuccess(body: string): boolean {
+  const text = body.toLowerCase();
+  return (
+    text.includes('queue') ||
+    text.includes('sent') ||
+    text.includes('added') ||
+    text.includes('ok')
+  );
+}
+
 export async function sendWhatsAppNotification(message: string): Promise<{
   sent: boolean;
   provider?: string;
   error?: string;
 }> {
-  const phone = process.env.WHATSAPP_NOTIFY_PHONE ?? '5581991821954';
+  const phone = formatNotifyPhone(process.env.WHATSAPP_NOTIFY_PHONE ?? '5581991821954');
   const callMeBotKey = process.env.CALLMEBOT_API_KEY;
 
   if (callMeBotKey) {
@@ -127,11 +143,17 @@ export async function sendWhatsAppNotification(message: string): Promise<{
     url.searchParams.set('phone', phone);
     url.searchParams.set('text', message);
     url.searchParams.set('apikey', callMeBotKey);
+    url.searchParams.set('source', 'deploy-landing');
 
     const res = await fetch(url.toString());
-    if (!res.ok) {
-      const body = await res.text().catch(() => '');
-      return { sent: false, provider: 'callmebot', error: body || `HTTP ${res.status}` };
+    const body = await res.text().catch(() => '');
+
+    if (!res.ok || !isCallMeBotSuccess(body)) {
+      return {
+        sent: false,
+        provider: 'callmebot',
+        error: body || `HTTP ${res.status}`,
+      };
     }
 
     return { sent: true, provider: 'callmebot' };
@@ -166,4 +188,61 @@ export async function sendWhatsAppNotification(message: string): Promise<{
     sent: false,
     error: 'Configure CALLMEBOT_API_KEY ou Z-API no Netlify',
   };
+}
+
+export async function sendEmailNotification(
+  subject: string,
+  message: string,
+  replyTo?: string
+): Promise<{ sent: boolean; provider?: string; error?: string }> {
+  const notifyEmail = process.env.NOTIFY_EMAIL ?? 'contato@deploysolucoes.com.br';
+
+  try {
+    const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(notifyEmail)}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        _subject: subject,
+        message,
+        _replyto: replyTo,
+        _template: 'table',
+        _captcha: 'false',
+      }),
+    });
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      return { sent: false, provider: 'email', error: body || `HTTP ${res.status}` };
+    }
+
+    return { sent: true, provider: 'email' };
+  } catch (error) {
+    return {
+      sent: false,
+      provider: 'email',
+      error: error instanceof Error ? error.message : 'Erro ao enviar e-mail',
+    };
+  }
+}
+
+export async function sendLeadNotification(message: string, options?: { replyTo?: string }) {
+  const whatsapp = await sendWhatsAppNotification(message);
+  if (whatsapp.sent) {
+    return { ok: true, channels: ['whatsapp'], whatsapp };
+  }
+
+  const email = await sendEmailNotification(
+    'Nova intenção de compra - Deploy Soluções',
+    message,
+    options?.replyTo
+  );
+
+  if (email.sent) {
+    return { ok: true, channels: ['email'], whatsapp, email };
+  }
+
+  return { ok: false, whatsapp, email };
 }

@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendWhatsAppNotification } from '@/lib/notify-whatsapp';
+import {
+  isWhatsAppConfigured,
+  sendLeadNotification,
+} from '@/lib/notify-whatsapp';
 
 interface IntencaoCompraBody {
   nome?: string;
@@ -20,6 +23,16 @@ function formatIntencaoCompraMessage(data: Required<IntencaoCompraBody>): string
     '',
     'Cliente direcionado para o pagamento.',
   ].join('\n');
+}
+
+export async function GET() {
+  return NextResponse.json({
+    ok: true,
+    whatsapp_configured: isWhatsAppConfigured(),
+    notify_phone: process.env.WHATSAPP_NOTIFY_PHONE ?? '5581991821954',
+    notify_email: process.env.NOTIFY_EMAIL ?? 'contato@deploysolucoes.com.br',
+    email_fallback: true,
+  });
 }
 
 export async function POST(request: NextRequest) {
@@ -48,12 +61,17 @@ export async function POST(request: NextRequest) {
       linkCompra,
     });
 
-    const result = await sendWhatsAppNotification(message);
+    const result = await sendLeadNotification(message, { replyTo: email });
+
+    if (!result.ok) {
+      console.error('[intencao-compra] Falha em todos os canais:', result);
+    }
 
     return NextResponse.json({
       ok: true,
-      whatsapp_sent: result.sent,
-      provider: result.provider,
+      notified: result.ok,
+      channels: result.channels ?? [],
+      whatsapp_configured: isWhatsAppConfigured(),
     });
   } catch (error) {
     console.error('[intencao-compra]', error);

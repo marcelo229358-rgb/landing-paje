@@ -12,35 +12,30 @@ export default function IntencaoCompraForm({ solucaoNome, linkCompra }: Intencao
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState('');
   const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [telefone, setTelefone] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setEnviando(true);
     setErro('');
 
     try {
-      const res = await fetch('/api/leads/intencao-compra', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nome: nome.trim(),
-          email: email.trim(),
-          telefone: telefone.trim(),
-          solucaoNome,
-          linkCompra,
-        }),
+      const body = new URLSearchParams({
+        'form-name': 'captura-leads',
+        nome: nome.trim(),
+        whatsapp: whatsapp.trim(),
+        solucao: solucaoNome,
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Não foi possível registrar sua intenção de compra.');
-      }
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString(),
+      });
 
       window.location.href = linkCompra;
-    } catch (error) {
-      setErro(error instanceof Error ? error.message : 'Erro ao enviar dados. Tente novamente.');
+    } catch {
+      setErro('Erro ao enviar dados. Tente novamente.');
       setEnviando(false);
     }
   };
@@ -79,41 +74,38 @@ export default function IntencaoCompraForm({ solucaoNome, linkCompra }: Intencao
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form
+            name="captura-leads"
+            method="POST"
+            data-netlify="true"
+            onSubmit={handleSubmit}
+            className="space-y-3"
+          >
+            <input type="hidden" name="form-name" value="captura-leads" />
+            <input type="hidden" name="solucao" value={solucaoNome} />
+
             <div>
-              <label className="text-xs font-medium text-muted-foreground">Nome completo</label>
               <input
                 type="text"
+                name="nome"
                 required
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                placeholder="Seu nome completo"
-                className="mt-1 block w-full rounded-lg border px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent"
+                placeholder="Seu Nome"
+                className="block w-full rounded-lg border px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
 
             <div>
-              <label className="text-xs font-medium text-muted-foreground">Telefone com DDD</label>
               <input
                 type="tel"
+                name="whatsapp"
                 required
-                value={telefone}
-                onChange={(e) => setTelefone(e.target.value)}
-                placeholder="(81) 99999-9999"
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value)}
+                placeholder="Seu Zap"
                 minLength={10}
-                className="mt-1 block w-full rounded-lg border px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">E-mail</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu@email.com"
-                className="mt-1 block w-full rounded-lg border px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent"
+                className="block w-full rounded-lg border px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
 
@@ -128,7 +120,7 @@ export default function IntencaoCompraForm({ solucaoNome, linkCompra }: Intencao
               disabled={enviando}
               className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-accent text-sm font-semibold text-white transition-colors hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {enviando ? 'Enviando...' : 'Confirmar e ir para pagamento'}
+              {enviando ? 'Enviando...' : 'Finalizar Compra'}
             </button>
           </form>
         </div>
