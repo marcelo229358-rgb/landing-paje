@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getSolucoesDestaque } from '@/lib/solucao';
 import { categoriaLabels } from '@/lib/solucao';
+import { formatPrecoBr } from '@/lib/format';
 
 export default async function FeaturedSolutions() {
   const solucoes = await getSolucoesDestaque(3);
@@ -44,7 +45,9 @@ export default async function FeaturedSolutions() {
                   <h3 className="text-base font-semibold text-white sm:text-lg">{s.nome}</h3>
                   <p className="mt-0.5 line-clamp-2 text-xs text-zinc-400 sm:text-sm">{s.subtitulo}</p>
                   <p className="mt-3 text-sm font-semibold text-accent sm:mt-4">
-                    Solicitar orçamento →
+                    {s.preco_mensal != null
+                      ? `R$ ${formatPrecoBr(s.preco_mensal)}/mês →`
+                      : 'Solicitar orçamento →'}
                   </p>
                 </div>
               </Link>

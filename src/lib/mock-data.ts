@@ -29,6 +29,8 @@ export const mockSolucoes: Solucao[] = [
     subtitulo: 'Agendamento, gestão de clientes e controle financeiro',
     status: 'disponivel',
     destaque: true,
+    preco_mensal: 49.9,
+    saas_product: 'agenda-barbe',
     descricao:
       'Plataforma completa para barbearias e salões de beleza. Agendamento online, gestão de clientes, controle de comissões, relatórios financeiros e painel administrativo intuitivo.',
     funcionalidades: [
@@ -52,6 +54,8 @@ export const mockSolucoes: Solucao[] = [
     subtitulo: 'E-commerce completo com gestão de produtos e pagamentos',
     status: 'disponivel',
     destaque: true,
+    preco_mensal: 99.9,
+    saas_product: 'loja-virtual',
     descricao:
       'Loja virtual profissional com catálogo de produtos, carrinho, checkout integrado, gestão de estoque e painel para acompanhar vendas em tempo real.',
     funcionalidades: [
@@ -69,25 +73,51 @@ export const mockSolucoes: Solucao[] = [
   },
   {
     id: 3,
-    nome: 'SaaS LinkedIn',
-    slug: 'saas-linkedin',
+    nome: 'LinkScore',
+    slug: 'linkscore',
     categoria: 'saas',
-    subtitulo: 'Presença profissional e captação de leads no LinkedIn',
+    subtitulo: 'Link na bio, métricas e página profissional',
     status: 'disponivel',
     destaque: true,
+    preco_mensal: 24.99,
+    saas_product: 'linkscore',
     descricao:
-      'Plataforma para profissionais e empresas que querem fortalecer sua marca no LinkedIn. Landing page integrada, portfólio, formulário de captação e analytics de engajamento.',
+      'Plataforma de link na bio com analytics, página profissional personalizável e captação de leads. Ideal para criadores, profissionais e pequenos negócios.',
     funcionalidades: [
-      'Landing page profissional',
-      'Portfólio de cases e projetos',
-      'Formulário de captação de leads',
-      'Integração com LinkedIn',
-      'Blog e conteúdo SEO',
-      'Analytics de visitantes',
+      'Links ilimitados',
+      'Analytics de cliques',
+      'Página profissional',
+      'Formulário de captação',
+      'Domínio customizado',
+      'Métricas em tempo real',
     ],
     fotos: [
       { id: 5, solucao_id: 3, url: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=900&q=80', ordem: 1, principal: true },
       { id: 6, solucao_id: 3, url: 'https://images.unsplash.com/photo-1521737711864-e3b97375f902?w=900&q=80', ordem: 2, principal: false },
+    ],
+  },
+  {
+    id: 7,
+    nome: 'SysContabel',
+    slug: 'syscontabel',
+    categoria: 'saas',
+    subtitulo: 'Gestão de empréstimos, parcelas e juros para empresas',
+    status: 'disponivel',
+    destaque: true,
+    saas_product: 'syscontabel',
+    descricao:
+      'Plataforma multi-tenant para gestão de empréstimos e parcelamentos. Cálculo automático de juros e multas, geração de boletos e contratos em PDF, notificações por WhatsApp e dashboard financeiro completo.',
+    funcionalidades: [
+      'Gestão de contratos e parcelas',
+      'Cálculo automático de juros e multa',
+      'Geração de contratos e recibos em PDF',
+      'Notificações automáticas por WhatsApp',
+      'Dashboard financeiro com indicadores',
+      'Multi-empresa (multi-tenant)',
+    ],
+    fotos: [
+      { id: 10, solucao_id: 7, url: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=900&q=80', ordem: 1, principal: true },
+      { id: 11, solucao_id: 7, url: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=900&q=80', ordem: 2, principal: false },
     ],
   },
   {

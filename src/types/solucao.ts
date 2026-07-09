@@ -21,6 +21,8 @@ export interface Solucao {
   descricao: string;
   funcionalidades: string[];
   fotos: FotoSolucao[];
+  preco_mensal?: number;
+  saas_product?: string;
   created_at?: string;
   updated_at?: string;
 }

@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Solucao } from '@/types/solucao';
 import { categoriaLabels } from '@/lib/solucao';
+import { formatPrecoBr } from '@/lib/format';
 
 interface CardSolucaoProps {
   solucao: Solucao;
@@ -43,7 +44,9 @@ export default function CardSolucao({ solucao }: CardSolucaoProps) {
         </div>
 
         <p className="mt-auto pt-3 text-sm font-semibold text-accent">
-          Solicitar orçamento →
+          {solucao.preco_mensal != null
+            ? `R$ ${formatPrecoBr(solucao.preco_mensal)}/mês →`
+            : 'Solicitar orçamento →'}
         </p>
       </div>
     </Link>
